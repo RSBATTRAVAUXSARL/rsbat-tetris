@@ -1,293 +1,311 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="fr">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-
-<title>RS-BAT • Construction Game</title>
+<meta charset="UTF-8">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>RS-BAT • Construction Pixel</title>
 
 <style>
-/* =========================
-   VARIABLES RS-BAT
-========================= */
-:root{
-  --rs-blue:#1e4fd8;
-  --rs-yellow:#f2b705;
-
-  --bg:#0b0f14;
-  --panel:#111824;
-  --text:#e6eefc;
-  --muted:#9fb2d6;
-  --shadow: rgba(0,0,0,.45);
-}
-
-/* =========================
-   FIX iOS HEIGHT
-========================= */
-html,body{height:100%}
-body{
+/* ================= RESET MOBILE ================= */
+html, body {
   margin:0;
-  color:var(--text);
-  font:14px/1.4 system-ui,-apple-system,Segoe UI,Roboto;
-  display:flex;
-  justify-content:center;
-  align-items:flex-start;
-  min-height:calc(var(--vh,1vh)*100);
-  padding:
-    calc(14px + env(safe-area-inset-top))
-    calc(14px + env(safe-area-inset-right))
-    calc(18px + env(safe-area-inset-bottom))
-    calc(14px + env(safe-area-inset-left));
-  background:
-    radial-gradient(900px 600px at 20% 10%, #18306a 0%, var(--bg) 60%);
-  overflow:auto;
+  padding:0;
+  height:100%;
+  overflow:hidden;
+  background:#0b1220;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  color:#e8eefc;
 }
 
-/* =========================
-   FOND CHANTIER PIXEL ART
-========================= */
+/* ================= BACKGROUND PIXEL CHANTIER ================= */
 body::before{
   content:"";
   position:fixed;
   inset:0;
   background:
-    linear-gradient(transparent 70%, rgba(0,0,0,.7)),
-    repeating-linear-gradient(
-      90deg,
-      rgba(255,255,255,.03) 0 8px,
-      rgba(0,0,0,.03) 8px 16px
-    ),
-    repeating-linear-gradient(
-      0deg,
-      rgba(255,255,255,.02) 0 6px,
-      rgba(0,0,0,.02) 6px 12px
-    );
-  filter: blur(6px);
+    linear-gradient(180deg,rgba(11,18,32,.85),rgba(11,18,32,.95)),
+    repeating-linear-gradient(90deg,#1c2436 0 4px,#1a2233 4px 8px),
+    repeating-linear-gradient(0deg,#1c2436 0 4px,#1a2233 4px 8px);
+  filter: blur(1.5px);
   z-index:-1;
 }
 
-/* =========================
-   LAYOUT
-========================= */
-.wrap{
-  width:min(980px,100%);
-  display:grid;
-  grid-template-columns:360px 220px;
-  gap:14px;
-}
-
-@media(max-width:820px){
-  .wrap{grid-template-columns:1fr}
-}
-
-/* =========================
-   PANELS
-========================= */
-.card{
-  background:linear-gradient(180deg,rgba(255,255,255,.05),rgba(255,255,255,.02));
-  border:1px solid rgba(255,255,255,.1);
-  border-radius:16px;
-  box-shadow:0 18px 40px var(--shadow);
-  overflow:hidden;
-}
-
-/* =========================
-   TOP BAR
-========================= */
-.topbar{
+/* ================= LAYOUT ================= */
+.app{
   display:flex;
-  justify-content:space-between;
+  justify-content:center;
   align-items:center;
-  padding:10px 14px;
-  background:rgba(0,0,0,.35);
-  border-bottom:1px solid rgba(255,255,255,.1);
+  height:100%;
 }
+
+.wrap{
+  display:flex;
+  gap:14px;
+  max-width:920px;
+  width:100%;
+  padding:10px;
+}
+
+/* ================= PANELS ================= */
+.panel{
+  background:rgba(15,22,40,.85);
+  border:1px solid rgba(255,255,255,.08);
+  border-radius:18px;
+  box-shadow:0 20px 40px rgba(0,0,0,.45);
+}
+
+/* ================= HEADER ================= */
+.header{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:10px 14px;
+  border-bottom:1px solid rgba(255,255,255,.08);
+}
+
 .brand{
   display:flex;
   align-items:center;
-  gap:10px;
-  font-weight:800;
-}
-.dot{
-  width:10px;height:10px;border-radius:50%;
-  background:var(--rs-blue);
-  box-shadow:0 0 0 4px rgba(30,79,216,.25);
+  gap:8px;
+  font-weight:700;
 }
 
-/* =========================
-   CANVAS
-========================= */
-canvas{
+.dot{
+  width:10px;
+  height:10px;
+  border-radius:50%;
+  background:#f6c400; /* RS-BAT jaune */
+  box-shadow:0 0 0 4px rgba(246,196,0,.25);
+}
+
+kbd{
+  padding:2px 6px;
+  border-radius:6px;
+  background:#111;
+  border:1px solid rgba(255,255,255,.2);
+  font-size:11px;
+}
+
+/* ================= GAME ================= */
+#game{
   display:block;
   width:100%;
-  background:#060a10;
-}
-#game{
-  aspect-ratio:1/2;
-  max-height:60svh;
-  max-height:60dvh;
+  height:auto;
+  background:#05080f;
+  touch-action:none;
 }
 
-/* =========================
-   CONSOLE
-========================= */
-.side{
-  padding:14px;
+/* ================= CONSOLE ================= */
+.console{
+  width:260px;
+  padding:12px;
   display:flex;
   flex-direction:column;
   gap:10px;
 }
+
 .stat{
   display:flex;
   justify-content:space-between;
-  background:rgba(0,0,0,.25);
-  border:1px solid rgba(255,255,255,.1);
-  border-radius:10px;
-  padding:8px 10px;
-}
-button{
-  padding:8px;
-  border-radius:10px;
-  border:1px solid rgba(255,255,255,.15);
-  background:rgba(0,0,0,.3);
-  color:var(--text);
-  font-weight:700;
-}
-button:hover{border-color:var(--rs-yellow)}
-input{
   background:rgba(0,0,0,.35);
-  border:1px solid rgba(255,255,255,.15);
-  color:var(--text);
-  border-radius:8px;
-  padding:6px 8px;
+  padding:8px 10px;
+  border-radius:12px;
+  font-size:14px;
 }
 
-/* =========================
-   FOOT NOTE
-========================= */
+input{
+  width:100%;
+  padding:8px;
+  border-radius:10px;
+  background:#0c1222;
+  border:1px solid rgba(255,255,255,.15);
+  color:#fff;
+}
+
+button{
+  padding:10px;
+  border-radius:12px;
+  border:1px solid rgba(255,255,255,.15);
+  background:#121a2e;
+  color:#fff;
+  font-weight:600;
+}
+
 .note{
   font-size:12px;
-  color:var(--muted);
+  color:#9fb0d8;
   background:rgba(0,0,0,.25);
-  border:1px solid rgba(255,255,255,.08);
-  border-radius:10px;
   padding:8px;
+  border-radius:10px;
+}
+
+/* ================= MOBILE ================= */
+@media(max-width:820px){
+  .wrap{flex-direction:column; align-items:center;}
+  .console{width:100%;}
 }
 </style>
 </head>
 
 <body>
+<div class="app">
+  <div class="wrap">
 
-<div class="wrap">
-
-  <!-- JEU -->
-  <div class="card">
-    <div class="topbar">
-      <div class="brand">
-        <span class="dot"></span>
-        RS-BAT • Construction
+    <!-- ================= GAME PANEL ================= -->
+    <div class="panel">
+      <div class="header">
+        <div class="brand">
+          <span class="dot"></span>
+          RS-BAT • Construction Pixel
+        </div>
+        <div>
+          <kbd>P</kbd> pause &nbsp;
+          <kbd>R</kbd> restart
+        </div>
       </div>
-      <div style="font-size:12px;color:var(--muted)">
-        Pause P • Restart R
-      </div>
+      <canvas id="game" width="320" height="640"></canvas>
     </div>
-    <canvas id="game" width="360" height="720"></canvas>
-  </div>
 
-  <!-- CONSOLE -->
-  <div class="card">
-    <div class="topbar">
-      <div class="brand"><span class="dot"></span> Console</div>
-      <div style="font-size:12px;color:var(--muted)">v1.0</div>
-    </div>
-    <div class="side">
-      <input placeholder="Pseudo (optionnel)">
+    <!-- ================= CONSOLE ================= -->
+    <div class="panel console">
+      <input id="pseudo" placeholder="Pseudo (optionnel)">
+      <button id="validate">Valider</button>
+
       <div class="stat"><span>Score</span><b id="score">0</b></div>
       <div class="stat"><span>Lignes</span><b id="lines">0</b></div>
       <div class="stat"><span>Niveau</span><b id="level">1</b></div>
-      <button onclick="togglePause()">Pause</button>
-      <button onclick="resetGame()">Restart</button>
-      <div class="note">
-        Construis des lignes complètes.<br>
-        Plus tu en fais, plus le chantier avance.
-      </div>
-    </div>
-  </div>
 
+      <div class="note">
+        Fais des lignes complètes.<br>
+        Plus tu empiles propre, plus le chantier avance.
+      </div>
+
+      <div class="note" id="status">Prêt.</div>
+    </div>
+
+  </div>
 </div>
 
 <script>
-/* =========================
-   FIX iOS vh
-========================= */
-(function(){
-  function vh(){
-    document.documentElement.style.setProperty('--vh',`${window.innerHeight*0.01}px`);
-  }
-  vh(); window.addEventListener('resize',vh);
-})();
+/* =====================================================
+   JEU TETRIS SIMPLIFIÉ + TOUCH MOBILE
+   ===================================================== */
 
-/* =========================
-   MINI TETRIS SIMPLE
-========================= */
-const canvas=document.getElementById('game');
-const ctx=canvas.getContext('2d');
-const COLS=10,ROWS=20;
-const CELL=canvas.width/COLS;
+const canvas = document.getElementById("game");
+const ctx = canvas.getContext("2d");
 
-let board=[...Array(ROWS)].map(()=>Array(COLS).fill(0));
-let piece={x:4,y:0,shape:[[1,1,1,1]]};
-let score=0,lines=0,level=1,paused=false;
+const COLS=10, ROWS=20, SIZE=32;
+canvas.width = COLS*SIZE;
+canvas.height = ROWS*SIZE;
+
+let board = Array.from({length:ROWS},()=>Array(COLS).fill(0));
+let piece, score=0, lines=0, level=1;
+let dropTimer=0, dropDelay=800;
+let paused=false;
+
+const shapes=[
+  [[1,1,1,1]],
+  [[1,1],[1,1]],
+  [[0,1,0],[1,1,1]],
+  [[1,0,0],[1,1,1]],
+  [[0,0,1],[1,1,1]]
+];
+
+function newPiece(){
+  const s = shapes[Math.random()*shapes.length|0];
+  return {x:3,y:0,s};
+}
+
+piece=newPiece();
 
 function draw(){
   ctx.clearRect(0,0,canvas.width,canvas.height);
   board.forEach((r,y)=>r.forEach((v,x)=>{
-    if(v) tile(x,y,"#777");
+    if(v) block(x,y,"#8a8a8a");
   }));
-  piece.shape.forEach((r,y)=>r.forEach((v,x)=>{
-    if(v) tile(piece.x+x,piece.y+y,"#f2b705");
+  piece.s.forEach((r,y)=>r.forEach((v,x)=>{
+    if(v) block(piece.x+x,piece.y+y,"#f6c400");
   }));
 }
 
-function tile(x,y,c){
+function block(x,y,c){
   ctx.fillStyle=c;
-  ctx.fillRect(x*CELL,y*CELL,CELL-1,CELL-1);
+  ctx.fillRect(x*SIZE,y*SIZE,SIZE-1,SIZE-1);
 }
 
-function tick(){
-  if(paused)return;
-  piece.y++;
-  if(collide()){
-    piece.y--;
-    merge();
-    piece={x:4,y:0,shape:[[1,1,1,1]]};
-  }
-  draw();
-}
-
-function collide(){
-  return piece.shape.some((r,y)=>r.some((v,x)=>{
-    if(!v)return false;
-    let nx=piece.x+x, ny=piece.y+y;
-    return ny>=ROWS || board[ny]?.[nx];
-  }));
+function collide(px,py,shape){
+  for(let y=0;y<shape.length;y++)
+    for(let x=0;x<shape[y].length;x++)
+      if(shape[y][x]){
+        let nx=px+x, ny=py+y;
+        if(nx<0||nx>=COLS||ny>=ROWS||board[ny]?.[nx]) return true;
+      }
+  return false;
 }
 
 function merge(){
-  piece.shape.forEach((r,y)=>r.forEach((v,x)=>{
+  piece.s.forEach((r,y)=>r.forEach((v,x)=>{
     if(v) board[piece.y+y][piece.x+x]=1;
   }));
 }
 
-function togglePause(){paused=!paused}
-function resetGame(){
-  board=[...Array(ROWS)].map(()=>Array(COLS).fill(0));
-  score=lines=0;
+function rotate(){
+  const n = piece.s[0].map((_,i)=>piece.s.map(r=>r[i]).reverse());
+  if(!collide(piece.x,piece.y,n)) piece.s=n;
 }
 
-setInterval(tick,600);
-draw();
-</script>
+function tick(t=0){
+  if(!paused){
+    dropTimer+=16;
+    if(dropTimer>dropDelay){
+      piece.y++;
+      if(collide(piece.x,piece.y,piece.s)){
+        piece.y--;
+        merge();
+        piece=newPiece();
+      }
+      dropTimer=0;
+    }
+  }
+  draw();
+  requestAnimationFrame(tick);
+}
 
+/* ================= KEYBOARD ================= */
+document.addEventListener("keydown",e=>{
+  if(e.key==="ArrowLeft"&&!collide(piece.x-1,piece.y,piece.s)) piece.x--;
+  if(e.key==="ArrowRight"&&!collide(piece.x+1,piece.y,piece.s)) piece.x++;
+  if(e.key==="ArrowDown") piece.y++;
+  if(e.key==="ArrowUp") rotate();
+  if(e.key==="p") paused=!paused;
+  if(e.key==="r") location.reload();
+});
+
+/* ================= TOUCH MOBILE ================= */
+let sx,sy,st;
+canvas.addEventListener("touchstart",e=>{
+  const t=e.touches[0];
+  sx=t.clientX; sy=t.clientY; st=Date.now();
+},{passive:false});
+
+canvas.addEventListener("touchend",e=>{
+  let dx=e.changedTouches[0].clientX-sx;
+  let dy=e.changedTouches[0].clientY-sy;
+  let dt=Date.now()-st;
+
+  if(Math.abs(dx)<10 && Math.abs(dy)<10){
+    if(dt>300) piece.y+=3;
+    else rotate();
+  }else if(Math.abs(dx)>Math.abs(dy)){
+    if(dx>0&&!collide(piece.x+1,piece.y,piece.s)) piece.x++;
+    else if(dx<0&&!collide(piece.x-1,piece.y,piece.s)) piece.x--;
+  }else if(dy>0){
+    piece.y++;
+  }
+},{passive:false});
+
+tick();
+</script>
 </body>
 </html>
